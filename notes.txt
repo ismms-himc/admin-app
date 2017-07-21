@@ -158,4 +158,124 @@ Field Types
 
   The sidebar now gives access to the second resource, Users. The users list shows the email as a <a href='mailto:'> tag.
 
-  In
+  In admin-on-rest, fields are simple React components. At runtime, they receive the record fetched from the API on 9e.g. {"id": 2, "name": "Ervin Howell", "username": "Antonette", "email":"asfasfas@", ...}), and the source field they should display (e.g. 'email').
+
+  Fields are React Components
+  ***************************
+    Fields are simple React components. they receive a record from the API and the source field they should display from this record.
+
+  That means that writing a custom Field component is really simple. For instance, to create a UrlField:
+
+    // in admin-on-rest/src/mui/field/UrlField.js
+    import React from 'react';
+    import PropTypes from 'prop-types';
+
+    const UrlField = ({ record = {}, source }) =>
+      <a href={record[source]}>
+        {record[source]}
+      </a>;
+
+    UrlField.propTypes = {
+      record: PropTypes.object,
+      source: PropTypes.string.isRequired,
+    };
+
+    export default UrlField;
+
+  Custom Field
+  ************
+    Have not tried this yet.
+
+Relationships
+-------------
+  In JSONPlaceholder, each post record includes a userID field, which points to a user:
+
+    {
+      "id": 1
+      ...
+    }
+
+  Admin-on-REST knows how to take advantage of these foreign keys to fetch references. For instance, to include the user name in the posts list, use the <ReferenceField>:
+
+    // in src/posts.js
+    import React from 'react';
+    import { List, Datagrid, TextField, EmailField, ReferenceField } from 'admin-on-rest';
+
+    export const PostList = (props) => (
+      <List {...props}>
+        <Datagrid>
+          <TextField source ='id' />
+          <ReferenceField label='User' source='userID' reference='users'>
+            <TextField source='name' />
+          </ReferenceField>
+          <TextField source='title' />
+          <TextField source='body' />
+        </Datagrid>
+      </List>
+    );
+
+  When displaying the posts list, the app now fethes related user records, and displays their name as a <TextField>. Norice the label property: you can use it on any field component to customize the field label.
+
+  Tip: Reference components always pass the data they fetch to a child component, which is responsible for displaying the data.
+
+Creation and Edition
+--------------------
+  An admin interface is about dispaying remote data, but also about editing and creating. ADmin-on-REST provides <Create> and <Edit> components for that purpose. Add them to the posts script:
+
+    // in src/posts.js
+    import React from 'react';
+    import { List, Edit, Create, Datagrid, ReferenceField, TextField, EditButton, DisabledInput, LongTextInput, ReferenceInput, SelectInput, SimpleForm, TextInput } from admin-on-rest;
+
+    export const PostList = (props) => (
+      <List {...props}>
+        <Datagrid>
+          <TextField source='id' />
+          <ReferenceField label='User' source='userID' reference='users'>
+            <TextField source='name' />
+          </ReferenceField>
+          <TextField source='title' />
+          <TextField source='body' />
+          <EditButton />
+        </Datagrid>
+      </List>
+    );
+
+    const PostTitle = ({ record }) => {
+      return <span>Post {record ? `"${record.title}"` : ''}</span>;
+    };
+
+    export const PostEdit = (props) => (
+      <Edit title={<PostTitle />} {...props}>
+        <SimpleForm>
+          <DisabledInput source='id' />
+          <ReferenceInput label='User' source='userId' reference='useres'>
+            <SelectInput optionText='name' />
+          </ReferenceInput>
+          <TextInput source='title' />
+          <LontTextInput source='body' />
+        </SimpleForm>
+      </Edit>
+    );
+
+    export const PostCreate = (props) => (
+      <Create {...props}>
+        <SimpleForm>
+          <ReferenceInput label='User' source='userId' reference='users' allowEmpty>
+            <SelectInput optionText='name' />
+          </ReferenceInput>
+          <TextInput source='title' />
+          <LongTextInput source='body' />
+        </SimpleForm>
+      </Create>
+    );
+
+  Notice the additional <EditButton> field in the <PostList> children: that's what gives access to the post edition page. Also, the <Edit> component uses a custom <PostTitle> component as title, which shows the way to customize the title for a given page. Also, the <Edit> component uses a custom <PostTitle> component as title, which shows the way to customize the title for a given page.
+
+  If you've understood the <List> component, the <Edit> and <Create> components will be no surprise. They are responsible for fetching the record, and displaying the page title. They pass the record down to the <SimpleForm> component, which is responsible for the form layout, default values, and validation. Just like <Datagrid>, <SimpleForm> uses its children to determine the form inputs to display. It expects input components as children. <DisabledInput>, <TextInput>, <LongTextInput>, and <ReferenceInput> are such inputs.
+
+  <SimpleForm> Use children to determine inputs
+  **********************************************
+    It sounds like SimpleForm uses its children (?) to determine the form inputs to display - this might mean that it looks at the JSON object and displays form components based on the structure of the object.
+
+    As for the <ReferenceInput>, it takes the same props as the <ReferenceField> (used earlier in the list page). <ReferenceInput> uses these props to fetch the API for possible references related to the current record (in this case, possible users for the current post). It then passes these possible references to the child component (<SelectInput>), which is responsible for displaying them (via their name in that case), and letting the user select one. <SelectInput> renders a <select> tag in HTML.
+
