@@ -68,6 +68,94 @@ Making Contact with the API
 
     import { PostList } from './posts';
 
+    const App = () => (
+      <Admin restClient={jsonSErverRestClient('http://jsonplaceolder.typicode.com')}>
+        <Resource name='posts' lists={PostList}
+      </Admin>
+    );
+
+    export default App;
+
+  The App component now renders an <Admin> component, which is the main compoent of admin-on-rest. This component expects a REST client as a parameter - a function capable of translting REST commands into HTTP requests. Since REST isn't a standard, you will probably have to provide a custom client to connect to your own APIs. But we'll dive into REST clients later. Fow now, let's take advantage of the jsonServerRestClient, which speaks the same REST dialect as JSONPlaceholder.
+
+  <Admin> Component
+  *****************
+  The <Admin> component is the main React component of admin-on-rest, which I think means is the main component that we will be using from admin-on-rest. We import the Admin component on the second import statement.
+
+  RESTClient
+  **********
+    We're using jsonServerRestClient as our REST client fo now. I plan on building the REST server using Flask, which will basically be the middle-man communicating to the databse.
+
+  The <Admin> component can contain one or more <Resource> comonents, each resource being mapped to an endpoint in the API. To begin with, we'll display the list of posts. Here is what the <PostList> component looks like:
+
+  <Resource> and API
+  ******************
+  Resource components map to API endpoints.
+
+    // in scr/posts.js
+    import React from 'react';
+    import {List, Datagrid, TextField } from 'admin-on-rest';
+
+    export const PostList = (props) => (
+      <List {...props}>
+        <Datagrid>
+          <TextField source='id'/>
+          <TextField source='title'/>
+          <TextField source='body' />
+        </Datagrid>
+      <List/>
+    );
+
+  The main component of the post list is a <List> component, responsible for grabbing the information from the API, displaying the page title, and handling pagination. This list then delegates the display of the actual list of posts to a <Datagrid>, responsible for displaying a table with one row for each post. The datagrid uses its child components (here, a list of <TextField>) to determine the columns to render. to determine the columns to render. Each Field component maps a different field in the API response, specified by the source prop.
+
+  <List>
+  ******
+    Where is the <List> component getting information from the API? Then, each Field component maps a different field in the API response, specified by the source prop -- maybe the API response is props, which gets injected to the PostList comopnent and passed to the List component. I guess that the <List> component grabbing the information from the API refers to passsing props to the list component.
+
+    That's enough to display the post list. The list is already functional: you can reorder it by clicking on the column headers, or change pages by using the bottom pagination controls.
+
+Field Types
+-----------
+  You've just met the <TextField> component, but the admin-on-rest provides many Field components to map various content types. For instance, the /users endpoint in JSONPlasceholder contains emails.
+
+    >> curl http://jsonplaceholder.typicode.com/users/2
+
+    {
+      "id":2
+      ...
+    }
+
+  Let's create a new UserList, using <EmailField> to map the email field:
+
+    // in src/users.js
+    import React from 'react';
+    import { List, Datagrid, EmailField, TextField } from 'admin-on-rest';
+
+    export const UserList = (props) => (
+      <List title='All users' {...props}>
+        <Datagrid>
+          <TextField source='id' />
+          <TextField source='name' />
+          <TextField source='username' />
+          <EmailField source='email' />
+        </Datagrid>
+      </List>
+    );
+
+  You'll notice that this list overrides the default title. To include the new users resource in the admin app, add it in src/App.js
 
 
+    // in src/App.js
+    import { PostList } from './posts';
+    import { UserList } from './users';
 
+    const App = () => (
+      <Admin restclient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
+        <Resource name='posts' list={Postlist} />
+        <Resource name='users' list={UserList} />
+      </Admin>
+    );
+
+  The sidebar now gives access to the second resource, Users. The users list shows the email as a <a href='mailto:'> tag.
+
+  In
