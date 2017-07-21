@@ -1,8 +1,9 @@
 // in src/posts.js
 import React from 'react';
-import { List, Datagrid, TextField, EmailField, ReferenceField } from 'admin-on-rest';
+import { List, Datagrid, TextField, ReferenceField } from 'admin-on-rest';
 
 export const PostList = (props) => (
+
     <List {...props}>
         <Datagrid>
             <TextField source="id" />
