@@ -277,5 +277,141 @@ Creation and Edition
   **********************************************
     It sounds like SimpleForm uses its children (?) to determine the form inputs to display - this might mean that it looks at the JSON object and displays form components based on the structure of the object.
 
-    As for the <ReferenceInput>, it takes the same props as the <ReferenceField> (used earlier in the list page). <ReferenceInput> uses these props to fetch the API for possible references related to the current record (in this case, possible users for the current post). It then passes these possible references to the child component (<SelectInput>), which is responsible for displaying them (via their name in that case), and letting the user select one. <SelectInput> renders a <select> tag in HTML.
+  As for the <ReferenceInput>, it takes the same props as the <ReferenceField> (used earlier in the list page). <ReferenceInput> uses these props to fetch the API for possible references related to the current record (in this case, possible users for the current post). It then passes these possible references to the child component (<SelectInput>), which is responsible for displaying them (via their name in that case), and letting the user select one. <SelectInput> renders a <select> tag in HTML.
 
+  Tip: The <Edit> and the <Create> components use the same <ReferenceInput> configuration, except for the allowEmpty attribute, which is required in <Create>.
+
+  To use the new <PostEdit> and <PostCreate> components in the posts resource, just add them as edit and create attributes in the <Resource> component:
+
+    // in src/App.js
+    import { PostList, PostEdit, PostCreate } from './posts';
+    import { UserList } from './users';
+
+    const App = () => (
+      <Admin restClient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
+        <Resource name='posts' list={PostList} edit={PostEdit} create={PostCreate} />
+      </Admin>
+    )
+
+
+  Admin-on-rest automatically adds a 'create' button on top of hte posts list to give access to the <PostCreate> component. And the <EditButton> (pencil)renders in each line of the list to give access to the <PostEdit> component.
+
+  The form rendered in the create and edit paves is already functional. It issues POST and PUT requests to the REST API upon submission.
+
+  Note: JSONPlaceholder is a read-only API; although it seems to accept POST and PUT requests, it doesn't take into account the creations and edits - that's why, in this particular case, you will see errors after creation, and you won't see your edits after you save them. It's just an artifact of JSONPlaceholder.
+
+Deletion
+--------
+  There is not much to configure in a deletion view. To add removal abilities to a Resource, simply use the bundled <Delete> comopnent from admin-on-rest, and register it using the remove prop('delete' is a reserved word in JavaScript):
+
+    // in src/App.js
+    import { Delete } from 'admin-on-rest';
+
+    const App = () => (
+      <Admin restClient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
+        <Resource name='posts' list={PostList} edit={PostEdit} create={PostCreate} remove={Delete} />
+        // ...
+      </Admin>
+    );
+
+  In the edition view, a new 'delete' button appears. And you can also use the <DeleteButton> as a field in the list.
+
+Filters
+-------
+  Let's get back to the post list for a minute. It offers sorting and pagination, but one feature is missing: the ability to search content.
+
+  Admin-on-rest can use input components to create a multi-criteria search engine in the list view. First, create a <Filter> component just like you would write a <SimpleForm> component, using input components as children. Then, add it to the list using the filters prop:
+
+    // in src/posts.js
+    import { Filter, ReferenceInput, SelectInput, TextInput } from 'admin-on-rest';
+
+    const PostFilter = (props) => (
+      <Filter {...props}>
+        <TextInpyt label-'Search' source='q' alwaysOn />
+        <ReferenceInput label='User' source='userId' reference='users' allowEmpty>
+          <SelectInput optionText='name' />
+        </ReferenceInput>
+      </Filter>
+    );
+
+    export const PostList = (props) => (
+      <List {...props} filters={<PostFilter />}>
+        // ...
+      </List>
+    );
+
+  The first filter, 'q', takes advantage of a full-text functionality offered by JSONPlaceholder. It is alwaysOn, so it appears on the screen. The seocnd filter, 'userID', can be added by way of the 'add filter' button, located on the top of the list. As it's a <ReferenceInput>, it's already populated with possible users. It can be turned off by the end user.
+
+  Filters are 'search-as-you-type', meaning that when a user enters new values in the filter form, the list refreshes (via an API request) immediately.
+
+
+Customize the Menu Icons
+------------------------
+  ...
+
+Using a custom Home Page
+------------------------
+  ...
+
+Adding a Login Page
+-------------------
+  Most admin apps require authentication. Admin-on-request can check user credentials before displaying a page, and redirect to a login form when the REST API returns a 403 error code.
+
+  What those credentials are, and how to get them, are questions that you must answer. Admin-on-rest makes no assumption about your authentication strategy (basic auth, OAuth, custom route, etc), but gives you the hooks to plug your logic at the right place - by calling an authClient function.
+
+  For this tutorial, since there is no public authentication API we can use, let's use a fake authentication provider tha accepts every login request, and stores the username in localStorage. Each page chagnes will require that localStorage contains a username item.
+
+  The authClient is a simple function, which must return a Promist:
+
+    // in src/authClient.js
+    import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
+
+    export default (type, params) => {
+      // called when the user attempts to log in
+      if (type === AUTH_LOGIN) {
+        const { username } = params;
+        localStorage.setItem('username', username);
+        // accept all username/password combinations
+        return Promise.resolve();
+      }
+      // called when the user clicks on the logout button
+      if (type === AUTH_LOGOUT){
+        localStorage.removeItem('username');
+        return Promise.resolve();
+      }
+      // called when the API returns an error
+      if (type === AUTH_ERROR) {
+        const (status === 401 || status === 403){
+          localStorage.removeItem('username');
+          return Promise.reject();
+        }
+      }
+      // called when the user navigates to a new location
+      if (type === AUTH_CHECK){
+        return localStorage.getItem('username') ? Promise.resolve() : Promise.reject();
+      }
+      return Promise.reject('Unknown method');
+    };
+
+  Tip: As the restClient response is asynchronous, you can easily fetch an authentication server there.
+
+  To enable this authentication strategy, pass the client as the authClient prop in the <Admin> component.
+
+    // ins src/App.js
+    import Dashboard from './Dashboard';
+    import authClient from './authClient';
+
+    const App = () => (
+      <Admin authClient={authClient} restClient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
+        // ...
+      </Admin>
+    );
+
+  Once the app reloads, it's now behind a login form that accepts everyone:
+
+Responsive List
+---------------
+  ...
+
+Using Another REST Dialect
+--------------------------
