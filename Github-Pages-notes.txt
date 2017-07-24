@@ -34,3 +34,12 @@ Step 3
 
 Step 4
   Confirm that your project is using the gh-pages branch for the page..
+
+
+*********
+  For local development
+    npm run start
+
+  To deploy on github pages
+    npm run deploy
+
