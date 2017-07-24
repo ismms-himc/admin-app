@@ -66,6 +66,14 @@
 // engine in the list view. First, create a <Filter> component just like you
 // would write a <SimpleForm> component, using input components as children.
 // Then, add it to the list using the filters prop:
+//
+// The first filter, 'q', takes advantage of a full-text functionality offered
+// by JSONPlaceholder. It is alwaysOn, so it always appears on the screen. The
+// second filter, 'userId', can be added by way of the 'add filter' button,
+// located on top of the list. As it's a <ReferenceInput>, it's already
+// populated with possible users. It can be turned off by the end user. Filters
+// are 'search-as-you-type', meaning that when the user enters new values in the
+// filter form, the list refreshes (via an API request) immediately.
 
 // in src/posts.js
 import React from 'react';
@@ -75,7 +83,7 @@ import { List, Edit, Create, Datagrid, ReferenceField, TextField, EditButton, Di
 // make filter component and pass it to list later (do not export it to App.js)
 const PostFilter = (props) => (
   <Filter {...props}>
-    <TextInput labels='Search' source='q' alwaysOn />
+    <TextInput label='Text-Search' source='q' alwaysOn />
     <ReferenceInput label='User' source='userId' reference='users' allowEmpty >
       <SelectInput optionText='name' />
     </ReferenceInput>
