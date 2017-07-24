@@ -2,6 +2,7 @@
   "name": "test-admin",
   "version": "0.1.0",
   "private": true,
+  "homepage":"http://ismms-himc.github.io/admin-on-rest-tutorial",
   "dependencies": {
     "admin-on-rest": "^1.2.1",
     "react": "^15.6.1",
