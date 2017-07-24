@@ -4,6 +4,8 @@ Admin-on-REST Tutorial
 
   This 15 minute tutorial will expose how to create a new admin app based on an existing REST API.
 
+  Can build version for deployment using yarn build (see package json for script details)
+
 Installation: Facebook's create-react-app
 ------------------------------------------
 

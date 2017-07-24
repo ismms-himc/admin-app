@@ -11,16 +11,20 @@
 // a different field in the API response, specified by the source prop.
 //
 // That's enough to display the post list:
+//
+// You've just met the <TextField> component, but admin-on-rest provides many
+// Field components to map various content types. For instance, the /users
+// endpoint is JSONPlaceholder contains emails.
 
 // in src/posts.js
 import React from 'react';
 import { List, Datagrid, TextField } from 'admin-on-rest';
 
 export const PostList = (props) => (
-  <List {...props}>
+  <List title='All Users' {...props}>
     <Datagrid>
       <TextField source='id' />
-      <TextField source='title' />
+      <TextField source='name' />
       <TextField source='body' />
     </Datagrid>
   </List>
