@@ -32,6 +32,33 @@
 // An admin interface is about displaying remote data, but also about editing
 // and creating. Admin-on-REST provides <Create> and <Edit> components for that
 // purpose. Add them to the posts script:
+//
+// Notice the additional <EditButton> field in the <PostList> children: that's
+// what gives access to the post editing page. Also, the <Edit> component uses a
+// custom <PostTitle> component as title, which shows they way to customize the
+// for a given page.
+//
+// If you've understood the <List> component, the <Edit> and <Create> components
+// will be no surprise. They are responsible for fetching the record, and
+// displaying the page title. They pass the recrod down to the <SimpleForm>
+// component, which is responsible for the form layout, default values, and
+// validation. Just like <Datagrid>, <SimpleForm> uses its children to determine
+// the form inputs to display. It expects input components as children.
+// <DisabledInput>, <TextInput>, <LongTextInput>, and <ReferenceInput> are such
+// inputs.
+//
+// As for the <ReferenceInput>, it takes the same props as the <ReferenceField>
+// (used) earlier in the list page. <ReferenceInput> uses these props to fetch
+// the API for possible references related to the current record (in this case,
+// possible users for the current post). It then passes these possible
+// references to the child component (<SelectInput>), which is responsible for
+// displaying them (via their name in that case), and letting the user select
+// one. <SelectInput> renders a <select> tag in HTML.
+// Tip: The <Edit> and <Create> components use the same <ReferenceInput>
+// configuration, except for the allowEmpty attribute, which is required in
+// <Create>.
+
+
 
 // in src/posts.js
 import React from 'react';
