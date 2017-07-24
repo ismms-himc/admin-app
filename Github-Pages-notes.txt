@@ -1,0 +1,36 @@
+https://medium.freecodecamp.org/surge-vs-github-pages-deploying-a-create-react-app-project-c0ecbf317089
+
+Follow the instructions on the link above to deploy the page the github-pages. Quick walk-through.
+
+Step-1
+  Edit package.json by adding a new field named homepage:
+
+    "homepage": "http//<github-username>.github.io/<project-repo>"
+
+  Let's run npm run build again after the change:
+    ... output ...
+
+  Did you notive the new output above? The create-react-app CLI is walking us through the entire process. Pretty snazzy.
+
+Step-2
+  Next, you need to install the gh-pages plugin. This will allow us to publish to the gh-pages branch on GitHub straignt from within the terminal:
+
+    npm install --save-dev gh-pages
+
+  gh-pages is a special branch that GitHub Pages uses to publish projects. The beautiful thing about it is that the branch lives in the same repository as your project's code, but doesn't affect the project itself.
+
+  Note that if you already have a gh-pages branch in your project's repository, it will update the branch accordingly. If the branch doesn't exist, it will create it on the fly.
+
+Step 3
+  Add a new script to the scripts field inside package.json. Let's call the script deploy:
+
+    "deploy" : "npm run build&&gh-pages -d build"
+
+  And finally let's run it
+
+    >> npm run deploy
+
+  npm run deploy will first build your project via npm run build. Then it will publish it to a gh-pages branch on GitHub via gh-pages -d build.
+
+Step 4
+  Confirm that your project is using the gh-pages branch for the page..
