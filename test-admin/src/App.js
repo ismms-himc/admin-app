@@ -41,10 +41,40 @@
 // a Resource, simply use the bundled <Delete> component from admin-on-rest, and
 // register it using the remove prop ('delete' is a reserved word in JavaScript):
 // You can also use the <DeleteButton> as a filed in the list.
+//
+// Adding a Login Page
+// Most admin apps require authentication. Admin-on-rest can check user
+// credentials before displaying a page, and redirect to a login form where the
+// REST API returns a 403 error code.
+//
+// What those credentials are, and how to get them, are questions that you must
+// answer. Admin-on-rest makes no assumptions about your authentication strategy
+// (basic auth, OAuh, custom route, etc.), but gives you the hooks to plug your
+// logic at the right place - by calling an authClient function.
+//
+// For this tutorial, since there is no public authentication API we can use,
+// let's use a fake authentication provider that accepts every login request,
+// and stores the username in localStorage. Each page change will require that
+// localStorage conains a username item. The authCilient is a simple function,
+// which must return a Promise:
+// Tip: As the restClient response is asynchronous, you can easily fetch an
+// aythentication server in there.
+//
+// To enable this authentication strategy, pass the client as the authClient
+// prop in the <Admin> component. Once the app reloads, it is now behind a login
+// form that accepts everyone.
+//
+// Custom Homepage
+// By default, admin-on-rest displays the list page of the first resource as the
+// homepage. If you want to display a custom component instead, pass it the
+// dashboard prop of the <Admin> component.
+
 
 // in src/App.js
 import React from 'react';
 // import React components from admin-on-rest
+import Dashboard from './Dashboard';
+import authClient from './authClient';
 import { jsonServerRestClient, Admin, Resource, Delete } from 'admin-on-rest';
 
 // these are functions
@@ -55,12 +85,16 @@ import { UserList } from './users';
 const App = function(){
 
 
-  return (<Admin restClient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
+  return (
 
-    <Resource name='posts' list={PostList} edit={PostEdit} create={PostCreate} remove={Delete}/>
-    <Resource name='users' list={UserList} />
+    <Admin dashboard={Dashboard} authClient={authClient} restClient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
 
-  </Admin>)
+      <Resource name='posts' list={PostList} edit={PostEdit} create={PostCreate} remove={Delete}/>
+      <Resource name='users' list={UserList} />
+
+    </Admin>
+
+  )
 
 }
 // );
