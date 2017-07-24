@@ -57,19 +57,37 @@
 // Tip: The <Edit> and <Create> components use the same <ReferenceInput>
 // configuration, except for the allowEmpty attribute, which is required in
 // <Create>.
-
-
+//
+// Filters
+// Let's get back to the post list for a minute. It offers sorting and
+// pagination, but one feature is missing: the ability to search content.
+//
+// Admin-on-rest can use input components to create a multi-criteria search
+// engine in the list view. First, create a <Filter> component just like you
+// would write a <SimpleForm> component, using input components as children.
+// Then, add it to the list using the filters prop:
 
 // in src/posts.js
 import React from 'react';
-import { List, Edit, Create, Datagrid, ReferenceField, TextField, EditButton, DisabledInput, LongTextInput, ReferenceInput, SelectInput, SimpleForm, TextInput } from 'admin-on-rest';
+import { List, Edit, Create, Datagrid, ReferenceField, TextField, EditButton, DisabledInput, LongTextInput, ReferenceInput, SelectInput, SimpleForm, TextInput, Filter } from 'admin-on-rest';
+
+
+// make filter component and pass it to list later (do not export it to App.js)
+const PostFilter = (props) => (
+  <Filter {...props}>
+    <TextInput labels='Search' source='q' alwaysOn />
+    <ReferenceInput label='User' source='userId' reference='users' allowEmpty >
+      <SelectInput optionText='name' />
+    </ReferenceInput>
+  </Filter>
+);
 
 // export const PostList = (props) => (
 export const PostList = function(props) {
 
   {/*console.log(props);*/}
 
-  return (<List title='Post Board' {...props}>
+  return (<List title='Post Board' filters={<PostFilter />} {...props} >
     <Datagrid>
       <TextField source='id' />
       {/* getting user's name from users using userId from posts */}
@@ -112,3 +130,4 @@ export const PostCreate = (props) => (
     </SimpleForm>
   </Create>
 );
+
