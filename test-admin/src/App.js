@@ -90,7 +90,7 @@ const App = function(){
 
   return (
 
-    <Admin dashboard={Dashboard} authClient={authClient} restClient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
+    <Admin title='HIMC-Database'  dashboard={Dashboard} authClient={authClient} restClient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
 
       <Resource name='posts' list={PostList} edit={PostEdit} create={PostCreate} remove={Delete}/>
       <Resource name='users' list={UserList} />
