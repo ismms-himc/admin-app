@@ -458,3 +458,4 @@ Conclusion
   Admin-on-rest was built with customization in mind. You can replace any admin-on-rest component with a component of your own, for instance to display a custom list layout, or a different edition form for a gnven resource.
 
   Now that you've completed this tutorial, continue reading the admin-on-rest documentation, and read the Material UI components documentation.
+
