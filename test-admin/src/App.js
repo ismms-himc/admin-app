@@ -16,23 +16,26 @@
 // In admin-on-rest, fields are simple React components. At runtime, they rceive
 // the record fetched from the API, and the source field they should display
 // (e.g. email).
+// how to comment in jsx:
+//    {/*<Resource name='posts' list={PostList} />*/}
 
 // in src/App.js
 import React from 'react';
 import { jsonServerRestClient, Admin, Resource } from 'admin-on-rest';
 
+// these are function
 import { PostList } from './posts';
 import { UserList } from './users';
 
 // const App = () => (
 const App = function(){
 
-  console.log('here')
 
   return (<Admin restClient={jsonServerRestClient('http://jsonplaceholder.typicode.com')}>
 
     <Resource name='posts' list={PostList} />
     <Resource name='users' list={UserList} />
+
   </Admin>)
 
 }

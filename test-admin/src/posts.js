@@ -20,12 +20,17 @@
 import React from 'react';
 import { List, Datagrid, TextField } from 'admin-on-rest';
 
-export const PostList = (props) => (
-  <List title='All Users' {...props}>
+// export const PostList = (props) => (
+export const PostList = function(props) {
+
+  console.log(props);
+
+  return (<List title='All Users' {...props}>
     <Datagrid>
       <TextField source='id' />
       <TextField source='name' />
       <TextField source='body' />
     </Datagrid>
-  </List>
-);
+  </List>);
+}
+// );
