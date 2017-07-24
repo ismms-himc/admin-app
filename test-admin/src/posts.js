@@ -15,20 +15,30 @@
 // You've just met the <TextField> component, but admin-on-rest provides many
 // Field components to map various content types. For instance, the /users
 // endpoint is JSONPlaceholder contains emails.
+//
+// Relationships
+// In JSONPlaceholder, each post record includes a userId field, which points to
+// a user. Admin-on-REST knows how to take advantage of these foreign keys to
+// fetch references. For instance, to include the user name in the post list,
+// use the <ReferenceField>:
 
 // in src/posts.js
 import React from 'react';
-import { List, Datagrid, TextField } from 'admin-on-rest';
+import { List, Datagrid, TextField, EmailField, ReferenceField } from 'admin-on-rest';
 
 // export const PostList = (props) => (
 export const PostList = function(props) {
 
   console.log(props);
 
-  return (<List title='All Users' {...props}>
+  return (<List title='Something' {...props}>
     <Datagrid>
       <TextField source='id' />
-      <TextField source='name' />
+      {/* getting user's name from users using userId from posts */}
+      <ReferenceField label='User!' source='userId' reference='users'>
+        <TextField source='name' />
+      </ReferenceField>
+      <TextField source='title' />
       <TextField source='body' />
     </Datagrid>
   </List>);

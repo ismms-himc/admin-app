@@ -16,6 +16,7 @@
 // In admin-on-rest, fields are simple React components. At runtime, they rceive
 // the record fetched from the API, and the source field they should display
 // (e.g. email).
+//
 // how to comment in jsx:
 //    {/*<Resource name='posts' list={PostList} />*/}
 
@@ -23,7 +24,7 @@
 import React from 'react';
 import { jsonServerRestClient, Admin, Resource } from 'admin-on-rest';
 
-// these are function
+// these are functions
 import { PostList } from './posts';
 import { UserList } from './users';
 
