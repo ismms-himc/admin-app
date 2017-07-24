@@ -77,6 +77,9 @@ import Dashboard from './Dashboard';
 import authClient from './authClient';
 import { jsonServerRestClient, Admin, Resource, Delete } from 'admin-on-rest';
 
+// use custom API client
+import myApiRestClient from './restClient';
+
 // these are functions
 import { PostList, PostEdit, PostCreate } from './posts';
 import { UserList } from './users';
